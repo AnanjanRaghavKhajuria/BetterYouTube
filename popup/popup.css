@@ -1,0 +1,81 @@
+*{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+color: #fff;
+}
+
+*::selection{
+    background-color: rgb(51, 172, 219);
+}
+
+.popup{
+    width: 400px;
+    height: 600px;
+    background-color:  #1e293b;
+    padding: 20px 10px;
+}
+
+.header{
+    width: 400px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo{
+    width: 48px;
+    height: 48px;
+    position: relative;
+    top: 2px;
+}
+
+.heading-1{
+    font-size: 28px;
+    font-family: "Oswald", sans-serif;
+}
+
+.heading-2{
+    font-size: 26px;
+    font-family: "Oswald", sans-serif;
+
+}
+
+.header-title{
+    line-height: 28px;
+}
+
+.features-container{
+    margin: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+}
+
+.features-container > ul > li{
+    margin-left: 20px;
+    line-height: 30px;
+    font-size: 16px;
+    
+}
+
+.text{
+    font-size: 20px;
+}
+
+.GH-href:hover{
+    opacity: 0.85;
+}
+
+.GH-link-text{
+    font-size: 12px;
+}
+
+
+
+
+
+

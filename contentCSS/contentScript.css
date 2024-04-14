@@ -1,0 +1,52 @@
+.playlist-total-duration-timestamp{
+    color: #fff;
+    color: #fff;
+    padding: 0 3px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 14px;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    z-index: 999999;
+    background-color: #000;
+}
+
+.playback-speed-slider-container{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+.playback-speed-value-element{
+    /* width: 30px;
+    border: none;
+    outline: none;
+    background-color: transparent; */
+    color: #fff;
+    font-size: 14px;
+}
+
+/* .playback-speed-value-element::-webkit-outer-spin-button,
+.playback-speed-value-element::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+} */
+
+.playback-speed-slider{
+    
+    margin: 0 16px 0px 4px;
+    -webkit-appearance: none;
+    height: 4px;
+}
+
+.playback-speed-slider::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background-color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+}
+

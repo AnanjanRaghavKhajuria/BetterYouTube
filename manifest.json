@@ -1,0 +1,30 @@
+{
+    "manifest_version": 3,
+    "name": "Better Youtube",
+    "description": "Makes your YouTube better by adding various features.",
+    "version": "0.0.1",
+    "author": "Ananjan Raghav Khajuria",
+    "content_scripts": [
+        {
+            "matches": [
+                "https://*.youtube.com/*"
+            ],
+            "js": [
+                "contentScripts/contentScript.js"
+            ],
+            "css": [
+                "contentCSS/contentScript.css"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "action": {
+        "default_popup": "popup/popup.html"
+    },
+    "icons": {
+        "16": "icons/BetterYouTubeIcon16.png",
+        "32": "icons/BetterYouTubeIcon32.png",
+        "48": "icons/BetterYouTubeIcon48.png",
+        "128": "icons/BetterYouTubeIcon128.png"
+      }
+}
