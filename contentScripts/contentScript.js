@@ -28,21 +28,54 @@ if (firstUrl.includes("youtube.com/watch")) {
 function newPlaylistLoaded() {
     setTimeout(() => {
         const noOfVideosElement = document.querySelector('#page-manager > ytd-browse > ytd-playlist-header-renderer > div > div.immersive-header-content.style-scope.ytd-playlist-header-renderer > div.thumbnail-and-metadata-wrapper.style-scope.ytd-playlist-header-renderer > div > div.metadata-action-bar.style-scope.ytd-playlist-header-renderer > div.metadata-text-wrapper.style-scope.ytd-playlist-header-renderer > ytd-playlist-byline-renderer > div > yt-formatted-string:nth-child(2) > span:nth-child(1)');
-
+        const noOfUnavailableVideosElement = document.querySelector("ytd-alert-with-button-renderer > #text");
         if (noOfVideosElement) {
             const noOfVideos = parseInt(noOfVideosElement.innerText, 10);
+            let noOfUnavailableVideos = 0
+            if (noOfUnavailableVideosElement){
+                noOfUnavailableVideos = parseInt(noOfUnavailableVideosElement.innerText, 10);
+            }
+            if (isNaN(noOfUnavailableVideos)) {
+                noOfUnavailableVideos = 0
+            }
 
-            const durationElements = document.querySelectorAll("#contents > ytd-playlist-video-renderer #time-status > #text");
+            let durationElements = document.querySelectorAll("#contents > ytd-playlist-video-renderer #time-status > #text");
+            durationElements = Array.from(durationElements);
 
-            if (noOfVideos === durationElements.length) {
+            if ((noOfVideos - noOfUnavailableVideos) === durationElements.length) {
                 const totalDuration = findTotalDuration(durationElements);
                 const remainingDuration = findRemainingDuration(durationElements);
 
                 addDurationTimestamp(totalDuration, remainingDuration);
 
-            } else {
-                addDurationTimestamp("Playlist is not Fully Loaded (Scroll Down and RELOAD)");
+                
+            } else if ((noOfVideos - noOfUnavailableVideos) > durationElements.length) {
+                addDurationTimestamp("Playlist is not Fully Loaded (Scroll down till the end of the Playlist, even if duration appears, as it's not correct till you reach the end of the Playlist)");
 
+                const playlistCardContainer = document.querySelector("ytd-playlist-video-list-renderer > #contents");
+
+                const playlistObserver = new MutationObserver(() => {
+
+                    setTimeout(() => {
+                        durationElements = document.querySelectorAll("#contents > ytd-playlist-video-renderer #time-status > #text");
+                            const totalDuration = findTotalDuration(durationElements);
+                            const remainingDuration = findRemainingDuration(durationElements);
+                            addDurationTimestamp(totalDuration, remainingDuration);
+                    }, 1000);
+                    
+                });
+            
+                playlistObserver.observe(playlistCardContainer, {
+                    childList: true,
+                });
+
+
+            } else if ((noOfVideos - noOfUnavailableVideos) < durationElements.length) {
+                const totalDuration = findTotalDuration(durationElements.slice(0, noOfVideos - noOfUnavailableVideos));
+                const remainingDuration = findRemainingDuration(durationElements.slice(0, noOfVideos - noOfUnavailableVideos));
+                addDurationTimestamp(totalDuration, remainingDuration);
+            } else {
+                addDurationTimestamp("Unknown Error")
             }
         }
 
@@ -260,7 +293,7 @@ function skipAd() {
     const videoPlayerElement = document.querySelector('#movie_player');
     const ytVideo = document.querySelector('#movie_player > div.html5-video-container > video');
 
-    const observer = new MutationObserver((mutations) => {
+    const adObserver = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
             if (mutation.target.classList[0] === "video-ads") {
                 if (!isNaN(ytVideo.duration)){
@@ -274,7 +307,7 @@ function skipAd() {
         }
     });
 
-    observer.observe(videoPlayerElement, {
+    adObserver.observe(videoPlayerElement, {
         childList: true,
         subtree: true
 
