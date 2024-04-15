@@ -16,7 +16,7 @@ It automatically detects and skips through YouTube ads.
 
 View the total duration of a YouTube video and the remaining time left to watch.
 
-![PlaylistDurationExample.png](https://github.com/AnanjanRaghavKhajuria/BetterYouTube/blob/main/assets/PlaylistDurationExample.png)
+![PlaylistDurationExample](https://github.com/AnanjanRaghavKhajuria/BetterYouTube/assets/116965579/9d6b0c9d-2111-477c-82a0-f38eb8f1c389)
 
 The highlighted area in the red box displays the Total Duration Timestamp. Click on it to toggle to the Remaining Duration.
 
@@ -28,7 +28,7 @@ The highlighted area in the red box displays the Total Duration Timestamp. Click
 
 A range slider to play YouTube videos at up to 16x speed.
 
-![PlaybackSpeedExample.png](https://github.com/AnanjanRaghavKhajuria/BetterYouTube/blob/main/assets/PlaybackSpeedExample.png)
+![PlaybackSpeedExample](https://github.com/AnanjanRaghavKhajuria/BetterYouTube/assets/116965579/fa7ac7cb-e953-43ed-b2a7-ff492b44c9f7)
 
 The arrow points to the range slider, which can be used to control the Playback Speed of the video.
 
