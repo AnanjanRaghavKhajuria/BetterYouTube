@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Better Youtube",
     "description": "Makes your YouTube better by adding various features.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "author": "Ananjan Raghav Khajuria",
     "content_scripts": [
         {
