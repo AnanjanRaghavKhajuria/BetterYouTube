@@ -34,7 +34,7 @@ The arrow points to the range slider, which can be used to control the Playback 
 
 ## Installation
 
-1. Download the zip file
+1. Download the [zip file](https://github.com/AnanjanRaghavKhajuria/BetterYouTube/archive/refs/heads/main.zip)
 2. Save the downloaded folder anywhere you like (don't delete it)
 3. Open Chrome and go to chrome://extensions/
 4. Turn on the Developer mode
