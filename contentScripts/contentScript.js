@@ -263,8 +263,13 @@ function skipAd() {
     const observer = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
             if (mutation.target.classList[0] === "video-ads") {
+                if (!isNaN(ytVideo.duration)){
+                    ytVideo.currentTime = ytVideo.duration;
+                    }
+            } else if (mutation.target.classList[0] === "ytp-ad-text") {
+                if (!isNaN(ytVideo.duration)){
                 ytVideo.currentTime = ytVideo.duration;
-
+                }
             }
         }
     });
