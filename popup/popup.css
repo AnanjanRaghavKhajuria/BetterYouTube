@@ -11,7 +11,7 @@ color: #fff;
 
 .popup{
     width: 400px;
-    height: 600px;
+    height: 500px;
     background-color:  #1e293b;
     padding: 20px 10px;
 }
@@ -20,7 +20,7 @@ color: #fff;
     width: 400px;
     height: 40px;
     display: flex;
-    justify-content: center;
+    padding-left: 30px;
     align-items: center;
     gap: 10px;
 }
@@ -33,7 +33,7 @@ color: #fff;
 }
 
 .heading-1{
-    font-size: 28px;
+    font-size: 32px;
     font-family: "Oswald", sans-serif;
 }
 
@@ -41,10 +41,6 @@ color: #fff;
     font-size: 26px;
     font-family: "Oswald", sans-serif;
 
-}
-
-.header-title{
-    line-height: 28px;
 }
 
 .features-container{
@@ -68,10 +64,6 @@ color: #fff;
 
 .GH-href:hover{
     opacity: 0.85;
-}
-
-.GH-link-text{
-    font-size: 12px;
 }
 
 
