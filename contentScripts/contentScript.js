@@ -1,3 +1,4 @@
+let globalPlaybackSpeed = 1;
 
 window.navigation.addEventListener("navigate", (event) => {
     const urlObject = new URL(event.destination.url);
@@ -32,7 +33,7 @@ function newPlaylistLoaded() {
         if (noOfVideosElement) {
             const noOfVideos = parseInt(noOfVideosElement.innerText, 10);
             let noOfUnavailableVideos = 0
-            if (noOfUnavailableVideosElement){
+            if (noOfUnavailableVideosElement) {
                 noOfUnavailableVideos = parseInt(noOfUnavailableVideosElement.innerText, 10);
             }
             if (isNaN(noOfUnavailableVideos)) {
@@ -48,7 +49,7 @@ function newPlaylistLoaded() {
 
                 addDurationTimestamp(totalDuration, remainingDuration);
 
-                
+
             } else if ((noOfVideos - noOfUnavailableVideos) > durationElements.length) {
                 addDurationTimestamp("Playlist is not Fully Loaded (Scroll down till the end of the Playlist, even if duration appears, as it's not correct till you reach the end of the Playlist)");
 
@@ -58,13 +59,13 @@ function newPlaylistLoaded() {
 
                     setTimeout(() => {
                         durationElements = document.querySelectorAll("#contents > ytd-playlist-video-renderer #time-status > #text");
-                            const totalDuration = findTotalDuration(durationElements);
-                            const remainingDuration = findRemainingDuration(durationElements);
-                            addDurationTimestamp(totalDuration, remainingDuration);
+                        const totalDuration = findTotalDuration(durationElements);
+                        const remainingDuration = findRemainingDuration(durationElements);
+                        addDurationTimestamp(totalDuration, remainingDuration);
                     }, 1000);
-                    
+
                 });
-            
+
                 playlistObserver.observe(playlistCardContainer, {
                     childList: true,
                 });
@@ -128,6 +129,7 @@ function addPlaybackSpeedSlider() {
         // playbackSpeedValueElement.value = playbackSpeedVal;
         playbackSpeedValueElement.innerText = `${playbackSpeedVal}x`;
         document.querySelector('.html5-main-video').playbackRate = playbackSpeedVal;
+        globalPlaybackSpeed = playbackSpeedVal
 
     });
 
@@ -296,13 +298,16 @@ function skipAd() {
     const adObserver = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
             if (mutation.target.classList[0] === "video-ads") {
-                if (!isNaN(ytVideo.duration)){
+                if (!isNaN(ytVideo.duration)) {
                     ytVideo.currentTime = ytVideo.duration;
-                    }
-            } else if (mutation.target.classList[0] === "ytp-ad-text") {
-                if (!isNaN(ytVideo.duration)){
-                ytVideo.currentTime = ytVideo.duration;
                 }
+            } else if (mutation.target.classList[0] === "ytp-ad-text") {
+                if (!isNaN(ytVideo.duration)) {
+                    ytVideo.currentTime = ytVideo.duration;
+                }
+            }
+            if (document.querySelector('.html5-main-video').playbackRate != globalPlaybackSpeed) {
+                document.querySelector('.html5-main-video').playbackRate = globalPlaybackSpeed;
             }
         }
     });
