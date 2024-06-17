@@ -342,7 +342,7 @@ function videoRemainingTime() {
 
         videoRemainingDurationContainer.innerText = secondsToDuration([videoRemainingDuration]);
 
-        if (!leftControlsYT.innerHTML.includes("video-remaining-duration-container")) {
+        if (leftControlsYT.querySelectorAll('.video-remaining-duration-container').length == 0) {
             leftControlsYT.appendChild(videoRemainingDurationContainer);
         }
     }, 1000);
