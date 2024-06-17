@@ -32,6 +32,8 @@ A range slider to play YouTube videos at up to 16x speed.
 
 The arrow points to the range slider, which can be used to control the Playback Speed of the video.
 
+---
+
 #### Video Remaining Time Considering Playback Speed
 
 It shows you the remaining time of the video you're watching while taking the playback speed also into consideration.
