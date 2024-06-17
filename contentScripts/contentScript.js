@@ -336,6 +336,10 @@ function videoRemainingTime() {
         const timeWatched = addDurationToSeconds([timeWatchedElement.innerText]);
         const videoDuration = ytVideo.duration;
 
+        if (isNaN(videoDuration)) {
+            return;
+        }
+
         const playbackSpeed = ytVideo.playbackRate;
 
         const videoRemainingDuration = Math.floor((videoDuration - timeWatched) / playbackSpeed);
