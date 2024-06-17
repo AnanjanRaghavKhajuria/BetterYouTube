@@ -11,6 +11,7 @@ window.navigation.addEventListener("navigate", (event) => {
     if (url.includes("youtube.com/watch")) {
         addPlaybackSpeedSlider();
         skipAd();
+        videoRemainingTime();
     }
 });
 
@@ -22,6 +23,7 @@ if (firstUrl.includes("youtube.com/playlist")) {
 if (firstUrl.includes("youtube.com/watch")) {
     addPlaybackSpeedSlider();
     skipAd();
+    videoRemainingTime();
 }
 
 
@@ -196,7 +198,8 @@ function secondsToDuration(totalSeconds) {
     let minutes = Math.floor((totalSeconds % 3600) / 60);
     let seconds = Math.floor(totalSeconds % 60)
 
-    const totalDuration = `${days.toString().padStart(2, '0')}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    let totalDuration = `${days.toString().padStart(2, '0')}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    totalDuration = totalDuration.replace(/^00:/, "");
 
     return totalDuration;
 }
@@ -320,3 +323,27 @@ function skipAd() {
 }
 
 
+function videoRemainingTime() {
+
+    const ytVideo = document.querySelector('#movie_player > div.html5-video-container > video');
+    const timeWatchedElement = document.querySelector('.ytp-time-current');
+    const videoRemainingDurationContainer = document.createElement("div");
+    videoRemainingDurationContainer.setAttribute("class", "video-remaining-duration-container");
+    const leftControlsYT = document.querySelector("#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls");
+
+
+    setInterval(() => {
+        const timeWatched = addDurationToSeconds([timeWatchedElement.innerText]);
+        const videoDuration = ytVideo.duration;
+
+        const playbackSpeed = ytVideo.playbackRate;
+
+        const videoRemainingDuration = Math.floor((videoDuration - timeWatched) / playbackSpeed);
+
+        videoRemainingDurationContainer.innerText = secondsToDuration([videoRemainingDuration]);
+
+        if (!leftControlsYT.innerHTML.includes("video-remaining-duration-container")) {
+            leftControlsYT.appendChild(videoRemainingDurationContainer);
+        }
+    }, 1000);
+}

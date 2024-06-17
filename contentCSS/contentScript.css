@@ -50,3 +50,12 @@
     cursor: pointer;
 }
 
+
+.video-remaining-duration-container {
+    width: fit-content;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding-right: 10px;
+}
+
