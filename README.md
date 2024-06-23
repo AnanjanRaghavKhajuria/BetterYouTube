@@ -8,8 +8,6 @@
 
 It automatically detects and skips through YouTube ads.
 
-> NOTE: You might need to click on "Skip Ad" on some ads.
-
 ---
 
 #### Total and Remaining Duration of Playlists
