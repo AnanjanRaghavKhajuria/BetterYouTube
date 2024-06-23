@@ -6,7 +6,7 @@ window.navigation.addEventListener("navigate", (event) => {
 
 
     if (url.includes("youtube.com/playlist")) {
-        newPlaylistLoaded();
+        playlistDuration();
     }
     if (url.includes("youtube.com/watch")) {
         addPlaybackSpeedSlider();
@@ -18,7 +18,7 @@ window.navigation.addEventListener("navigate", (event) => {
 firstUrl = window.location.href;
 
 if (firstUrl.includes("youtube.com/playlist")) {
-    newPlaylistLoaded()
+    playlistDuration()
 }
 if (firstUrl.includes("youtube.com/watch")) {
     addPlaybackSpeedSlider();
@@ -28,7 +28,7 @@ if (firstUrl.includes("youtube.com/watch")) {
 
 
 
-function newPlaylistLoaded() {
+function playlistDuration() {
     setTimeout(() => {
         const noOfVideosElement = document.querySelector('#page-manager > ytd-browse > ytd-playlist-header-renderer > div > div.immersive-header-content.style-scope.ytd-playlist-header-renderer > div.thumbnail-and-metadata-wrapper.style-scope.ytd-playlist-header-renderer > div > div.metadata-action-bar.style-scope.ytd-playlist-header-renderer > div.metadata-text-wrapper.style-scope.ytd-playlist-header-renderer > ytd-playlist-byline-renderer > div > yt-formatted-string:nth-child(2) > span:nth-child(1)');
         const noOfUnavailableVideosElement = document.querySelector("ytd-alert-with-button-renderer > #text");
