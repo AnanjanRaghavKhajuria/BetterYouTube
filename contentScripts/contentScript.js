@@ -53,24 +53,32 @@ function playlistDuration() {
 
 
             } else if ((noOfVideos - noOfUnavailableVideos) > durationElements.length) {
-                addDurationTimestamp("Playlist is not Fully Loaded (Scroll down till the end of the Playlist, even if duration appears, as it's not correct till you reach the end of the Playlist)");
+                let videoNumberElement = Array.from(document.querySelectorAll('#index'));
+                const lastVideoNumber = parseInt(videoNumberElement[videoNumberElement.length - 1].innerText, 10);
 
-                const playlistCardContainer = document.querySelector("ytd-playlist-video-list-renderer > #contents");
+                if (lastVideoNumber % 100 === 0) {
+                    addDurationTimestamp("Playlist is not fully loaded, scroll down till the end of the playlist");
 
-                const playlistObserver = new MutationObserver(() => {
+                    const playlistCardContainer = document.querySelector("ytd-playlist-video-list-renderer > #contents");
 
-                    setTimeout(() => {
-                        durationElements = document.querySelectorAll("#contents > ytd-playlist-video-renderer #time-status > #text");
-                        const totalDuration = findTotalDuration(durationElements);
-                        const remainingDuration = findRemainingDuration(durationElements);
-                        addDurationTimestamp(totalDuration, remainingDuration);
-                    }, 1000);
+                    const playlistObserver = new MutationObserver(() => {
+                        setTimeout(() => {
+                            playlistDuration();
+                        }, 1000);
 
-                });
+                    });
 
-                playlistObserver.observe(playlistCardContainer, {
-                    childList: true,
-                });
+                    playlistObserver.observe(playlistCardContainer, {
+                        childList: true,
+                    });
+                } else {
+                    const totalDuration = findTotalDuration(durationElements);
+                    const remainingDuration = findRemainingDuration(durationElements);
+
+                    addDurationTimestamp(totalDuration, remainingDuration);
+
+                }
+
 
 
             } else if ((noOfVideos - noOfUnavailableVideos) < durationElements.length) {
@@ -82,7 +90,7 @@ function playlistDuration() {
             }
         }
 
-    }, 1000);
+    }, 1500);
 
 }
 
