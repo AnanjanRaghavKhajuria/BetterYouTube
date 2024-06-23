@@ -308,14 +308,14 @@ function skipAd() {
 
     const adObserver = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
-            if (mutation.target.classList[0] === "video-ads") {
+            if (mutation.target.classList[0] === "video-ads" || mutation.target.classList[0] === "ytp-ad-text") {
                 if (!isNaN(ytVideo.duration)) {
                     ytVideo.currentTime = ytVideo.duration;
                 }
-            } else if (mutation.target.classList[0] === "ytp-ad-text") {
-                if (!isNaN(ytVideo.duration)) {
-                    ytVideo.currentTime = ytVideo.duration;
-                }
+            }
+            if (document.querySelector('.ytp-skip-ad-button')) {
+                const skipAdBtn = document.querySelector('.ytp-skip-ad-button');
+                skipAdBtn.click()
             }
             if (document.querySelector('.html5-main-video').playbackRate != globalPlaybackSpeed) {
                 document.querySelector('.html5-main-video').playbackRate = globalPlaybackSpeed;
