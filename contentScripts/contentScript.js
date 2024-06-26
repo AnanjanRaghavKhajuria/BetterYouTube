@@ -92,10 +92,7 @@ function playlistDuration() {
 
 
         // Injecting HTML to Playlist Thumbnail Element
-        if (document.querySelector('.playlist-total-duration-timestamp')) {
-            const totalDurationElement = document.querySelector(".playlist-total-duration-timestamp");
-            playlistThumbnailElement.removeChild(totalDurationElement);
-        }
+        removePreviousTimestamp();
         playlistThumbnailElement.appendChild(totalDurationTimestampElement);
 
         totalDurationTimestampElement.addEventListener('click', (event) => {
@@ -110,6 +107,15 @@ function playlistDuration() {
         });
     }
 
+    function removePreviousTimestamp() {
+        const playlistThumbnailElement = document.querySelector("#page-manager > ytd-browse > ytd-playlist-header-renderer > div > div.immersive-header-content.style-scope.ytd-playlist-header-renderer > div.thumbnail-and-metadata-wrapper.style-scope.ytd-playlist-header-renderer > a > div > ytd-hero-playlist-thumbnail-renderer > div > div > yt-img-shadow");
+        if (document.querySelector('.playlist-total-duration-timestamp')) {
+            const totalDurationElement = document.querySelector(".playlist-total-duration-timestamp");
+            playlistThumbnailElement.removeChild(totalDurationElement);
+        }
+    }
+    
+    removePreviousTimestamp();
     setTimeout(() => {
         handlePlaylist();
     }, 1500);
