@@ -4,7 +4,14 @@ window.navigation.addEventListener("navigate", (event) => {
     const urlObject = new URL(event.destination.url);
     const url = urlObject.href
 
+    initializeFeatures(url);
+});
 
+firstUrl = window.location.href;
+initializeFeatures(firstUrl);
+
+
+function initializeFeatures(url) {
     if (url.includes("youtube.com/playlist")) {
         playlistDuration();
     }
@@ -13,83 +20,98 @@ window.navigation.addEventListener("navigate", (event) => {
         skipAd();
         videoRemainingTime();
     }
-});
-
-firstUrl = window.location.href;
-
-if (firstUrl.includes("youtube.com/playlist")) {
-    playlistDuration()
 }
-if (firstUrl.includes("youtube.com/watch")) {
-    addPlaybackSpeedSlider();
-    skipAd();
-    videoRemainingTime();
-}
-
-
 
 function playlistDuration() {
-    setTimeout(() => {
+
+    function totalVideosInPlaylist() {
         const noOfVideosElement = document.querySelector('#page-manager > ytd-browse > ytd-playlist-header-renderer > div > div.immersive-header-content.style-scope.ytd-playlist-header-renderer > div.thumbnail-and-metadata-wrapper.style-scope.ytd-playlist-header-renderer > div > div.metadata-action-bar.style-scope.ytd-playlist-header-renderer > div.metadata-text-wrapper.style-scope.ytd-playlist-header-renderer > ytd-playlist-byline-renderer > div > yt-formatted-string:nth-child(2) > span:nth-child(1)');
+        if (!noOfVideosElement) return;
+        const noOfVideos = parseInt(noOfVideosElement.innerText, 10);
+        return noOfVideos;
+    }
+
+    function UnavailableVideos() {
         const noOfUnavailableVideosElement = document.querySelector("ytd-alert-with-button-renderer > #text");
-        if (noOfVideosElement) {
-            const noOfVideos = parseInt(noOfVideosElement.innerText, 10);
-            let noOfUnavailableVideos = 0
-            if (noOfUnavailableVideosElement) {
-                noOfUnavailableVideos = parseInt(noOfUnavailableVideosElement.innerText, 10);
-            }
-            if (isNaN(noOfUnavailableVideos)) {
-                noOfUnavailableVideos = 0
-            }
+        let noOfUnavailableVideos = 0
+        if (noOfUnavailableVideosElement) noOfUnavailableVideos = parseInt(noOfUnavailableVideosElement.innerText, 10);
+        if (isNaN(noOfUnavailableVideos)) noOfUnavailableVideos = 0;
+        return noOfUnavailableVideos;
+    }
 
-            let durationElements = document.querySelectorAll("#contents > ytd-playlist-video-renderer #time-status > #text");
-            durationElements = Array.from(durationElements);
+    function handlePlaylist() {
+        const durationElements = Array.from(document.querySelectorAll("#contents > ytd-playlist-video-renderer #time-status > #text"));
 
-            if ((noOfVideos - noOfUnavailableVideos) === durationElements.length) {
+        const noOfAvailableVideos = totalVideosInPlaylist() - UnavailableVideos();
+
+        if (noOfAvailableVideos === durationElements.length) {
+            const totalDuration = findTotalDuration(durationElements);
+            const remainingDuration = findRemainingDuration(durationElements);
+
+            addDurationTimestamp(totalDuration, remainingDuration);
+
+        } else if (noOfAvailableVideos > durationElements.length) {
+            let videoNumberElement = Array.from(document.querySelectorAll('#index'));
+            const lastVideoNumber = parseInt(videoNumberElement[videoNumberElement.length - 1].innerText, 10);
+
+            if (lastVideoNumber % 100 === 0) {
+                addDurationTimestamp("Playlist is not fully loaded, scroll down till the end of the playlist");
+
+                const playlistCardContainer = document.querySelector("ytd-playlist-video-list-renderer > #contents");
+
+                const playlistObserver = new MutationObserver(() => {
+                    setTimeout(handlePlaylist, 1500);
+                });
+
+                playlistObserver.observe(playlistCardContainer, {
+                    childList: true,
+                });
+            } else {
                 const totalDuration = findTotalDuration(durationElements);
                 const remainingDuration = findRemainingDuration(durationElements);
 
                 addDurationTimestamp(totalDuration, remainingDuration);
 
-
-            } else if ((noOfVideos - noOfUnavailableVideos) > durationElements.length) {
-                let videoNumberElement = Array.from(document.querySelectorAll('#index'));
-                const lastVideoNumber = parseInt(videoNumberElement[videoNumberElement.length - 1].innerText, 10);
-
-                if (lastVideoNumber % 100 === 0) {
-                    addDurationTimestamp("Playlist is not fully loaded, scroll down till the end of the playlist");
-
-                    const playlistCardContainer = document.querySelector("ytd-playlist-video-list-renderer > #contents");
-
-                    const playlistObserver = new MutationObserver(() => {
-                        setTimeout(() => {
-                            playlistDuration();
-                        }, 1000);
-
-                    });
-
-                    playlistObserver.observe(playlistCardContainer, {
-                        childList: true,
-                    });
-                } else {
-                    const totalDuration = findTotalDuration(durationElements);
-                    const remainingDuration = findRemainingDuration(durationElements);
-
-                    addDurationTimestamp(totalDuration, remainingDuration);
-
-                }
-
-
-
-            } else if ((noOfVideos - noOfUnavailableVideos) < durationElements.length) {
-                const totalDuration = findTotalDuration(durationElements.slice(0, noOfVideos - noOfUnavailableVideos));
-                const remainingDuration = findRemainingDuration(durationElements.slice(0, noOfVideos - noOfUnavailableVideos));
-                addDurationTimestamp(totalDuration, remainingDuration);
-            } else {
-                addDurationTimestamp("Unknown Error")
             }
-        }
 
+        } else if (noOfAvailableVideos < durationElements.length) {
+            const totalDuration = findTotalDuration(durationElements.slice(0, noOfVideos - noOfUnavailableVideos));
+            const remainingDuration = findRemainingDuration(durationElements.slice(0, noOfVideos - noOfUnavailableVideos));
+            addDurationTimestamp(totalDuration, remainingDuration);
+        } else {
+            addDurationTimestamp("Unknown Error")
+        }
+    }
+
+    function addDurationTimestamp(totalDuration, remainingDuration) {
+        const playlistThumbnailElement = document.querySelector("#page-manager > ytd-browse > ytd-playlist-header-renderer > div > div.immersive-header-content.style-scope.ytd-playlist-header-renderer > div.thumbnail-and-metadata-wrapper.style-scope.ytd-playlist-header-renderer > a > div > ytd-hero-playlist-thumbnail-renderer > div > div > yt-img-shadow");
+
+        const totalDurationTimestampElement = document.createElement("span");
+        totalDurationTimestampElement.innerHTML = totalDuration;
+        totalDurationTimestampElement.classList.add("playlist-total-duration-timestamp");
+
+
+        // Injecting HTML to Playlist Thumbnail Element
+        if (document.querySelector('.playlist-total-duration-timestamp')) {
+            const totalDurationElement = document.querySelector(".playlist-total-duration-timestamp");
+            playlistThumbnailElement.removeChild(totalDurationElement);
+        }
+        playlistThumbnailElement.appendChild(totalDurationTimestampElement);
+
+        totalDurationTimestampElement.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (totalDurationTimestampElement.innerText === totalDuration) {
+                totalDurationTimestampElement.innerText = remainingDuration;
+            } else {
+                totalDurationTimestampElement.innerText = totalDuration;
+            }
+        });
+    }
+
+    setTimeout(() => {
+        handlePlaylist();
     }, 1500);
 
 }
@@ -116,22 +138,16 @@ function addPlaybackSpeedSlider() {
     playbackSpeedSliderElement.setAttribute("value", "1");
 
 
-
-
     const leftControlsYT = document.querySelector("#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls");
 
-    if (!leftControlsYT.innerHTML.includes("playback-speed-slider-container")) {
+    if (!leftControlsYT.innerHTML.includes("playback-speed-slider-container"))
         leftControlsYT.appendChild(sliderContainer);
-    }
 
-    if (!sliderContainer.innerHTML.includes("playback-speed-value-element")) {
+    if (!sliderContainer.innerHTML.includes("playback-speed-value-element"))
         sliderContainer.appendChild(playbackSpeedValueElement);
-    }
 
-    if (!sliderContainer.innerHTML.includes("playback-speed-slider")) {
+    if (!sliderContainer.innerHTML.includes("playback-speed-slider"))
         sliderContainer.appendChild(playbackSpeedSliderElement);
-
-    }
 
 
     playbackSpeedSliderElement.addEventListener("input", function () {
@@ -155,13 +171,8 @@ function addPlaybackSpeedSlider() {
     //     } else {
     //         playbackSpeedSliderElement.value = 1;
     //         playbackSpeedValueElement.value = 1;
-
     //     }
-
-
     // });
-
-
 }
 
 function addDurationToSeconds(arrayOfDuration) {
@@ -175,7 +186,6 @@ function addDurationToSeconds(arrayOfDuration) {
         let hours = 0;
         let days = 0;
 
-
         if (durationParts.length === 1) {
             seconds = parseInt(durationParts[0], 10);
         } else if (durationParts.length === 2) {
@@ -185,7 +195,6 @@ function addDurationToSeconds(arrayOfDuration) {
             hours = parseInt(durationParts[0], 10);
             minutes = parseInt(durationParts[1], 10);
             seconds = parseInt(durationParts[2], 10);
-
         } else if (durationParts.length === 4) {
             days = parseInt(durationParts[0], 10);
             hours = parseInt(durationParts[1], 10);
@@ -194,7 +203,6 @@ function addDurationToSeconds(arrayOfDuration) {
         }
 
         totalSeconds += (days * 86400) + (hours * 3600) + (minutes * 60) + seconds
-
     }
 
     return totalSeconds;
@@ -266,42 +274,6 @@ function findRemainingDuration(durationElements) {
 }
 
 
-function addDurationTimestamp(totalDuration, remainingDuration) {
-    const playlistThumbnailElement = document.querySelector("#page-manager > ytd-browse > ytd-playlist-header-renderer > div > div.immersive-header-content.style-scope.ytd-playlist-header-renderer > div.thumbnail-and-metadata-wrapper.style-scope.ytd-playlist-header-renderer > a > div > ytd-hero-playlist-thumbnail-renderer > div > div > yt-img-shadow");
-
-    const totalDurationTimestampElement = document.createElement("span");
-    totalDurationTimestampElement.innerHTML = totalDuration;
-    totalDurationTimestampElement.classList.add("playlist-total-duration-timestamp");
-
-
-    // Injecting HTML to Playlist Thumbnail Element
-    if (document.querySelector('.playlist-total-duration-timestamp')) {
-        const totalDurationElement = document.querySelector(".playlist-total-duration-timestamp");
-        playlistThumbnailElement.removeChild(totalDurationElement);
-    }
-    playlistThumbnailElement.appendChild(totalDurationTimestampElement);
-
-    totalDurationTimestampElement.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-
-
-
-
-        if (totalDurationTimestampElement.innerText === totalDuration) {
-            totalDurationTimestampElement.innerText = remainingDuration;
-        } else {
-            totalDurationTimestampElement.innerText = totalDuration;
-        }
-
-
-
-    });
-
-}
-
-
 function skipAd() {
     const videoPlayerElement = document.querySelector('#movie_player');
     const ytVideo = document.querySelector('#movie_player > div.html5-video-container > video');
@@ -334,20 +306,19 @@ function skipAd() {
 function videoRemainingTime() {
 
     const ytVideo = document.querySelector('#movie_player > div.html5-video-container > video');
-    const timeWatchedElement = document.querySelector('.ytp-time-current');
+    const leftControlsYT = document.querySelector("#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls");
+    // const timeWatchedElement = document.querySelector('.ytp-time-current');
+
     const videoRemainingDurationContainer = document.createElement("div");
     videoRemainingDurationContainer.setAttribute("class", "video-remaining-duration-container");
-    const leftControlsYT = document.querySelector("#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls");
 
 
     setInterval(() => {
-        const timeWatched = addDurationToSeconds([timeWatchedElement.innerText]);
         const videoDuration = ytVideo.duration;
+        if (isNaN(videoDuration)) return;
 
-        if (isNaN(videoDuration)) {
-            return;
-        }
-
+        // const timeWatched = addDurationToSeconds([timeWatchedElement.innerText]);    // Better Sync
+        const timeWatched = ytVideo.currentTime;    // More Reliable and Efficient
         const playbackSpeed = ytVideo.playbackRate;
 
         const videoRemainingDuration = Math.floor((videoDuration - timeWatched) / playbackSpeed);
