@@ -25,7 +25,7 @@ function initializeFeatures(url) {
 function playlistDuration() {
 
     function totalVideosInPlaylist() {
-        const noOfVideosElement = document.querySelector('#page-manager > ytd-browse > ytd-playlist-header-renderer > div > div.immersive-header-content.style-scope.ytd-playlist-header-renderer > div.thumbnail-and-metadata-wrapper.style-scope.ytd-playlist-header-renderer > div > div.metadata-action-bar.style-scope.ytd-playlist-header-renderer > div.metadata-text-wrapper.style-scope.ytd-playlist-header-renderer > ytd-playlist-byline-renderer > div > yt-formatted-string:nth-child(2) > span:nth-child(1)');
+        const noOfVideosElement = document.querySelector('ytd-playlist-byline-renderer > div > yt-formatted-string:nth-child(2) > span:nth-child(1)');
         if (!noOfVideosElement) return;
         const noOfVideos = parseInt(noOfVideosElement.innerText, 10);
         return noOfVideos;
@@ -55,12 +55,14 @@ function playlistDuration() {
             const lastVideoNumber = parseInt(videoNumberElement[videoNumberElement.length - 1].innerText, 10);
 
             if (lastVideoNumber % 100 === 0) {
-                addDurationTimestamp("Playlist is not fully loaded, scroll down till the end of the playlist");
+                // Known Issue: If the last video number is a multiple of 100, the duration of the last video is not displayed
+                addDurationTimestamp("Playlist is not fully loaded, scroll down till the time appears");
 
                 const playlistCardContainer = document.querySelector("ytd-playlist-video-list-renderer > #contents");
 
                 const playlistObserver = new MutationObserver(() => {
-                    setTimeout(handlePlaylist, 1500);
+                    handlePlaylist();
+                    playlistObserver.disconnect();
                 });
 
                 playlistObserver.observe(playlistCardContainer, {
@@ -75,8 +77,8 @@ function playlistDuration() {
             }
 
         } else if (noOfAvailableVideos < durationElements.length) {
-            const totalDuration = findTotalDuration(durationElements.slice(0, noOfVideos - noOfUnavailableVideos));
-            const remainingDuration = findRemainingDuration(durationElements.slice(0, noOfVideos - noOfUnavailableVideos));
+            const totalDuration = findTotalDuration(durationElements.slice(0, noOfAvailableVideos));
+            const remainingDuration = findRemainingDuration(durationElements.slice(0, noOfAvailableVideos));
             addDurationTimestamp(totalDuration, remainingDuration);
         } else {
             addDurationTimestamp("Unknown Error")
@@ -84,6 +86,7 @@ function playlistDuration() {
     }
 
     function addDurationTimestamp(totalDuration, remainingDuration) {
+        if (!remainingDuration) remainingDuration = totalDuration;
         const playlistThumbnailElement = document.querySelector("#page-manager > ytd-browse > ytd-playlist-header-renderer > div > div.immersive-header-content.style-scope.ytd-playlist-header-renderer > div.thumbnail-and-metadata-wrapper.style-scope.ytd-playlist-header-renderer > a > div > ytd-hero-playlist-thumbnail-renderer > div > div > yt-img-shadow");
 
         const totalDurationTimestampElement = document.createElement("span");
@@ -114,11 +117,32 @@ function playlistDuration() {
             playlistThumbnailElement.removeChild(totalDurationElement);
         }
     }
-    
+
+    function waitForPlaylist() {
+        let checkTime = 0;
+        let maxTime = 60;
+        const checkPlaylistInterval = setInterval(() => {
+            if (checkTime >= maxTime) clearInterval(checkPlaylistInterval);
+
+            const noOfAvailableVideos = totalVideosInPlaylist() - UnavailableVideos();
+            const durationElements = document.querySelectorAll("#contents > ytd-playlist-video-renderer #time-status > #text");
+
+            if (noOfAvailableVideos > 100) {
+                addDurationTimestamp("Playlist is not fully loaded, scroll down till the time appears");
+            }
+
+            if (noOfAvailableVideos === durationElements.length) {
+                clearInterval(checkPlaylistInterval);
+                handlePlaylist();
+            } else {
+                handlePlaylist();
+            }
+            checkTime++;
+        }, 1000);
+    }
+
     removePreviousTimestamp();
-    setTimeout(() => {
-        handlePlaylist();
-    }, 1500);
+    waitForPlaylist();
 
 }
 
@@ -295,6 +319,8 @@ function skipAd() {
                 const skipAdBtn = document.querySelector('.ytp-skip-ad-button');
                 skipAdBtn.click()
             }
+            // This is not related to skipping ads but to set the playback speed to the global playback speed
+            // Doing it here to use the already defined mutation observer
             if (document.querySelector('.html5-main-video').playbackRate != globalPlaybackSpeed) {
                 document.querySelector('.html5-main-video').playbackRate = globalPlaybackSpeed;
             }
