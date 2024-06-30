@@ -12,7 +12,7 @@ It automatically detects and skips through YouTube ads.
 
 #### Total and Remaining Duration of Playlists
 
-View the total duration of a YouTube video and the remaining time left to watch.
+View the total duration of a YouTube playlist and the remaining time left to watch.
 
 ![PlaylistDurationExample](https://github.com/AnanjanRaghavKhajuria/BetterYouTube/assets/116965579/9d6b0c9d-2111-477c-82a0-f38eb8f1c389)
 
