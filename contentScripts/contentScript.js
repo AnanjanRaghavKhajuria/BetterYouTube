@@ -211,13 +211,15 @@ function addDurationToSeconds(arrayOfDuration) {
     for (const duration of arrayOfDuration) {
 
         const durationParts = duration.split(":");
+        console.log(typeof durationParts[0]);
         let seconds = 0;
         let minutes = 0;
         let hours = 0;
         let days = 0;
 
         if (durationParts.length === 1) {
-            seconds = parseInt(durationParts[0], 10);
+            const reg = /^\d+$/;
+            reg.test(durationParts[0]) ? seconds = parseInt(durationParts[0], 10) : seconds = 0
         } else if (durationParts.length === 2) {
             minutes = parseInt(durationParts[0], 10);
             seconds = parseInt(durationParts[1], 10);
